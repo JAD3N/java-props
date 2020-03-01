@@ -39,14 +39,20 @@ impl Properties {
     //     }
     // }
 
-    pub fn parse(file: &File) -> io::Result<()> {
-        let mut entries = Vec::new();
+    pub fn parse_file(file: &File) -> io::Result<()> {
         let mut reader = BufReader::new(file);
         let mut contents = String::new();
 
         reader.read_to_string(&mut contents)?;
 
-        let mut iter = Iterator::new(&contents);
+        Self::parse(&contents);
+
+        Ok(())
+    }
+
+    pub fn parse(contents: &String) {
+        let mut entries = Vec::new();
+        let mut iter = Iterator::new(contents);
 
         loop {
             let chr = match iter.peek() {
@@ -64,8 +70,6 @@ impl Properties {
         }
 
         Self::build_property(&entries, &iter);
-
-        Ok(())
     }
 
     fn build_property_component(value: &PropertyValue, iter: &Iterator) -> String {
@@ -116,16 +120,5 @@ impl Properties {
                 println!("{}: {}", key, value);
             }
         }
-    }
-}
-
-mod tests {
-    #[test]
-    fn basic_file() {
-        use std::fs::File;
-        use crate::Properties;
-
-        let file = File::open("server.properties").unwrap();
-        Properties::parse(&file).unwrap();
     }
 }
