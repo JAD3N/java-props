@@ -3,10 +3,10 @@ mod iterator;
 
 use iterator::Iterator;
 use std::io::{self, BufReader, prelude::*};
+use std::collections::HashMap;
 use std::fs::File;
 use std::char;
 
-#[derive(Debug)]
 pub enum PropertyType {
     Property,
     Key,
@@ -18,7 +18,6 @@ pub enum PropertyType {
     Separator,
 }
 
-#[derive(Debug)]
 pub struct PropertyValue {
     start: usize,
     end: usize,
@@ -26,33 +25,61 @@ pub struct PropertyValue {
     type_: PropertyType,
 }
 
-pub struct Properties;
+pub struct Properties {
+    contents: String,
+    values: Vec<PropertyValue>,
+    data: HashMap<String, String>,
+}
 
 impl Properties {
-    pub fn new() -> Properties {
-        Properties {}
+    pub fn new(contents: &String) -> Properties {
+        let contents = contents.clone();
+        let mut iter = Iterator::new(&contents);
+        let values = Self::build_property_values(&mut iter);
+        let data = Self::build_properties(&values, &iter);
+
+        Properties {
+            contents,
+            values,
+            data,
+        }
     }
 
-    // pub fn load(&mut self, entries: &[PropertyEntry]) {
-    //     for _entry in entries {
-    //         println!("Entry!");
-    //     }
-    // }
+    pub fn get(&self, key: &str) -> Option<&String> {
+        self.data.get(key)
+    }
 
-    pub fn parse_file(file: &File) -> io::Result<()> {
+    pub fn set(&mut self, key: &str, value: String) {
+        self.data.insert(key.to_string(), value);
+    }
+
+    pub fn new_file(file: &File) -> io::Result<Properties> {
         let mut reader = BufReader::new(file);
         let mut contents = String::new();
 
         reader.read_to_string(&mut contents)?;
 
-        Self::parse(&contents);
-
-        Ok(())
+        Ok(Self::new(&contents))
     }
 
-    pub fn parse(contents: &String) {
-        let mut entries = Vec::new();
+    pub fn parse_file(file: &File) -> io::Result<HashMap<String, String>> {
+        let mut reader = BufReader::new(file);
+        let mut contents = String::new();
+
+        reader.read_to_string(&mut contents)?;
+
+        Ok(Self::parse(&contents))
+    }
+
+    pub fn parse(contents: &String) -> HashMap<String, String>  {
         let mut iter = Iterator::new(contents);
+        let entries = Self::build_property_values(&mut iter);
+
+        Self::build_properties(&entries, &iter)
+    }
+
+    fn build_property_values(iter: &mut Iterator) -> Vec<PropertyValue> {
+        let mut values = Vec::new();
 
         loop {
             let chr = match iter.peek() {
@@ -61,15 +88,15 @@ impl Properties {
             };
 
             if chr.is_whitespace() {
-                entries.push(parser::read_whitespace(&mut iter));
+                values.push(parser::read_whitespace(iter));
             } else if parser::is_comment_indicator(chr) {
-                entries.push(parser::read_comment(&mut iter));
+                values.push(parser::read_comment(iter));
             } else {
-                entries.push(parser::read_property(&mut iter));
+                values.push(parser::read_property(iter));
             }
         }
 
-        Self::build_property(&entries, &iter);
+        values
     }
 
     fn build_property_component(value: &PropertyValue, iter: &Iterator) -> String {
@@ -110,15 +137,19 @@ impl Properties {
         component
     }
 
-    fn build_property(values: &Vec<PropertyValue>, iter: &Iterator) {
+    fn build_properties(values: &Vec<PropertyValue>, iter: &Iterator) -> HashMap<String, String> {
+        let mut data = HashMap::new();
+
         for value in values {
             if let PropertyType::Property = value.type_ {
                 let children = value.children.as_ref().unwrap();
                 let key = Self::build_property_component(&children[0], iter);
                 let value = Self::build_property_component(&children[2], iter);
 
-                println!("{}: {}", key, value);
+                data.insert(key, value);
             }
         }
+
+        data
     }
 }
