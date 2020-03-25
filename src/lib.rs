@@ -98,6 +98,12 @@ impl Properties {
         Ok(Self::new_str(&contents))
     }
 
+    pub fn save(&self, file: &mut File) -> io::Result<String> {
+        let contents = self.to_string();
+        file.write(contents.as_bytes())?;
+        Ok(contents)
+    }
+
     pub fn get(&self, key: &str) -> Option<&String> {
         self.data.get(key)
     }
@@ -115,7 +121,7 @@ impl Properties {
             &mut self.values[index]
         } else {
             let last_value = self.values.last();
-            if last_value.is_some() && Self::is_newline_value(last_value) {
+            if last_value.is_some() && !Self::is_newline_value(last_value) {
                 self.values.push(PropertyValue {
                     data: PropertyData::Text(String::from("\n")),
                     children: None,
@@ -319,7 +325,7 @@ mod test {
     use std::io;
 
     fn get_test_props() -> io::Result<Properties> {
-        let file = File::open("test.properties").unwrap();
+        let file = File::open("test.properties")?;
         Properties::new_file(&file)
     }
 
