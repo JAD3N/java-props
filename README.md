@@ -3,9 +3,7 @@
 A very simple and lightweight Java properties parser that lets you get, set and remove properties.
 
 * Allows parsing of properties files into a HashMap.
-
 * Maintains most formatting used within data such as indentation and new lines.
-
 * Very simple and easy to use.
 
 [![Crates.io][crates-badge]][crates-url]
