@@ -1,4 +1,4 @@
-use crate::{PropertyValue, PropertyType::*};
+use crate::{PropertyValue, PropertyRange, PropertyData, PropertyType::*};
 use crate::Iterator;
 
 pub fn read_whitespace(iter: &mut Iterator) -> PropertyValue {
@@ -12,8 +12,10 @@ pub fn read_whitespace(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: None,
         type_: Whitespace,
     }
@@ -38,8 +40,10 @@ pub fn read_comment(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: None,
         type_: Comment,
     }
@@ -65,8 +69,10 @@ pub fn read_escaped_value(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: None,
         type_: EscapedValue,
     }
@@ -96,8 +102,10 @@ pub fn read_key(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: Some(children),
         type_: Key,
     }
@@ -112,8 +120,10 @@ pub fn read_property(iter: &mut Iterator) -> PropertyValue {
     ];
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: Some(children),
         type_: Property,
     }
@@ -150,8 +160,10 @@ pub fn read_separator(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: None,
         type_: Separator,
     }
@@ -185,8 +197,10 @@ pub fn read_line_break(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: None,
         type_: LineBreak,
     }
@@ -217,8 +231,10 @@ pub fn read_value(iter: &mut Iterator) -> PropertyValue {
     }
 
     PropertyValue {
-        start,
-        end: iter.position,
+        data: PropertyData::Range(PropertyRange {
+            start,
+            end: iter.position,
+        }),
         children: Some(children),
         type_: Value,
     }
