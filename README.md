@@ -8,6 +8,9 @@ A very simple and lightweight Java properties parser that lets you get, set and 
 
 * Very simple and easy to use.
 
+[![Crates.io][crates-badge]][crates-url]
+[![MIT licensed][mit-badge]][mit-url]
+
 [crates-badge]: https://img.shields.io/crates/v/java-props.svg
 [crates-url]: https://crates.io/crates/java-props
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
