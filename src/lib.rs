@@ -61,7 +61,7 @@ impl Properties {
         }
     }
 
-    pub fn new_str(contents: &String) -> Properties {
+    pub fn from_str(contents: &String) -> Properties {
         let contents = contents.clone();
 
         let mut iter = Iterator::new(&contents);
@@ -89,13 +89,13 @@ impl Properties {
         }
     }
 
-    pub fn new_file(file: &File) -> io::Result<Properties> {
+    pub fn from_file(file: &File) -> io::Result<Properties> {
         let mut reader = BufReader::new(file);
         let mut contents = String::new();
 
         reader.read_to_string(&mut contents)?;
 
-        Ok(Self::new_str(&contents))
+        Ok(Self::from_str(&contents))
     }
 
     pub fn save(&self, file: &mut File) -> io::Result<String> {
@@ -326,7 +326,7 @@ mod test {
 
     fn get_test_props() -> io::Result<Properties> {
         let file = File::open("test.properties")?;
-        Properties::new_file(&file)
+        Properties::from_file(&file)
     }
 
     #[test]
@@ -366,7 +366,7 @@ mod test {
     fn empty_output_check() {
         let props_str = String::new();
         assert_eq!(
-            Properties::new_str(&props_str).to_string(),
+            Properties::from_str(&props_str).to_string(),
             props_str,
         )
     }
@@ -375,7 +375,7 @@ mod test {
     fn basic_output_check() {
         let props_str = String::from("simple\\ key = A fun value!\\nWith multiple lines!");
         assert_eq!(
-            Properties::new_str(&props_str).to_string(),
+            Properties::from_str(&props_str).to_string(),
             props_str,
         )
     }

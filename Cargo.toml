@@ -1,6 +1,6 @@
 [package]
 name = "java-props"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Jaden Buchan <me@jaden.bio>"]
 edition = "2018"
 license = "MIT/Apache-2.0"
